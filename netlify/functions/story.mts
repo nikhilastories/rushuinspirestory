@@ -1,11 +1,8 @@
 import type { Config, Context } from '@netlify/functions'
 import { deleteFile, getFile, isConfigured, putFile } from './lib/github.js'
 import { isAdmin, requireAdmin } from './lib/auth.js'
-import { isValidStatus, parseStory, serializeStory, storyPath, type StoryFrontmatter } from './lib/stories.js'
-
-function json(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })
-}
+import { json, withErrorHandling } from './lib/http.js'
+import { nextStoryFrontmatter, parseStory, serializeStory, storyPath } from './lib/stories.js'
 
 /** Untrusted request body for updating a story — every field is validated below. */
 interface UpdateStoryBody {
@@ -16,7 +13,7 @@ interface UpdateStoryBody {
   body?: unknown
 }
 
-export default async (req: Request, context: Context) => {
+export default withErrorHandling(async (req: Request, context: Context) => {
   if (!isConfigured()) {
     return json({ error: 'The storybook is not connected to GitHub yet.' }, 503)
   }
@@ -50,18 +47,9 @@ export default async (req: Request, context: Context) => {
     const { frontmatter: current, body: currentBody } = parseStory(existing.content)
     const updates = (await req.json().catch(() => ({}))) as UpdateStoryBody
 
-    const nextStatus = isValidStatus(updates.status) ? updates.status : current.status
     const now = new Date().toISOString()
-
-    const nextFrontmatter: StoryFrontmatter = {
-      ...current,
-      title: typeof updates.title === 'string' && updates.title.trim() ? updates.title.trim() : current.title,
-      excerpt: typeof updates.excerpt === 'string' ? updates.excerpt.trim() : current.excerpt,
-      coverImage: typeof updates.coverImage === 'string' ? updates.coverImage || undefined : current.coverImage,
-      status: nextStatus,
-      updatedAt: now,
-      publishedAt: nextStatus === 'published' ? current.publishedAt || now : current.publishedAt,
-    }
+    const nextFrontmatter = nextStoryFrontmatter(current, updates, now)
+    const nextStatus = nextFrontmatter.status
 
     const nextBody = typeof updates.body === 'string' ? updates.body : currentBody
 
@@ -89,7 +77,7 @@ export default async (req: Request, context: Context) => {
   }
 
   return json({ error: 'Method not allowed' }, 405)
-}
+})
 
 export const config: Config = {
   path: '/api/stories/:slug',

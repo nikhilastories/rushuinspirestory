@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --experimental-strip-types --test scripts/test-story-lifecycle.ts scripts/test-story-endpoint.ts"
   },
   "dependencies": {
     "@netlify/identity": "^1.2.0",
