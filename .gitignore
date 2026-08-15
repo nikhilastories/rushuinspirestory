@@ -1,0 +1,7 @@
+node_modules
+dist
+.netlify/blobs-serve
+.netlify/functions-internal
+.netlify/edge-functions-dist
+*.local
+.DS_Store
