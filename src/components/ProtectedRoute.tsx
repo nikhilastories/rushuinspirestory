@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
-import { getAdminUser } from '../lib/identity'
+import { checkAdminAccess } from '../lib/identity'
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<'checking' | 'allowed' | 'denied'>('checking')
 
   useEffect(() => {
     let cancelled = false
-    getAdminUser().then((user) => {
-      if (!cancelled) setState(user ? 'allowed' : 'denied')
+    checkAdminAccess().then((allowed) => {
+      if (!cancelled) setState(allowed ? 'allowed' : 'denied')
     })
     return () => {
       cancelled = true

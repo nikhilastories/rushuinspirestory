@@ -1,7 +1,9 @@
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Nav from './components/Nav'
 import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
+import { consumeAuthCallback, hasAuthCallback } from './lib/identity'
 import Home from './pages/Home'
 import Stories from './pages/Stories'
 import StoryDetail from './pages/StoryDetail'
@@ -13,7 +15,18 @@ import StoryEditor from './pages/admin/StoryEditor'
 
 export default function App() {
   const location = useLocation()
+  const navigate = useNavigate()
   const isAdminRoute = location.pathname.startsWith('/admin')
+
+  // Identity sends the browser back to whichever page started the sign-in, and
+  // falls back to the site root. Finish the handshake wherever it lands so a
+  // token — or a refusal — is never left stranded in the address bar.
+  useEffect(() => {
+    if (!hasAuthCallback()) return
+    consumeAuthCallback().then(() => {
+      if (!window.location.pathname.startsWith('/admin')) navigate('/admin', { replace: true })
+    })
+  }, [navigate])
 
   return (
     <>

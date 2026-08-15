@@ -63,18 +63,39 @@ Optional overrides, only needed if the content should live somewhere other than 
 
 ### 2. Netlify Identity with GitHub
 
-Enable Identity for the site, then under **Identity → Authentication providers** enable **GitHub**.
+Enable Identity for the site, then under **Identity → Authentication providers** enable **GitHub**. Registration
+must be set to **Open** — with "Invite only", GitHub sign-in is refused before it reaches this site's rules.
 
-Who counts as the owner is decided by `netlify/functions/identity.mts`. It defaults to the GitHub login
-`nikhilastories`; set `ADMIN_GITHUB_LOGIN` to a different username to change that, or set `ADMIN_EMAIL` to
-also accept a specific email address. Everyone else is denied at signup, so no unauthorized account is ever
-created.
+Who counts as the owner is decided by `netlify/functions/lib/owner.ts`. It works out the owner's GitHub username
+on its own, preferring `ADMIN_GITHUB_LOGIN`, then `GITHUB_OWNER`, then the account in the site's repository URL,
+and finally the built-in default `nikhilastories`. Set `ADMIN_EMAIL` to also accept a specific email address.
+Both variables accept a comma-separated list.
+
+An account that clearly belongs to somebody else is denied before it is ever created. An account whose GitHub
+username Identity did not record is allowed to exist but is granted nothing, and the login page explains which
+variable to set. Roles are re-checked on every login, so correcting a variable grants access on the next sign-in
+without editing the Identity user list by hand.
+
+That same rule is applied again on every request in `netlify/functions/lib/auth.ts`, so the signed-in owner is
+admitted whether or not the `admin` role was ever stamped on their record. A missed Identity event cannot lock
+the owner out of their own site.
 
 ### 3. First admin
 
-The owner's first sign-in through GitHub assigns the `admin` role automatically. If that role ever needs to
-be set by hand — for example after clearing the Identity user list — invite the address from **Identity →
-Invite users**, then open the user and add `admin` to their **Roles** field.
+The owner's first sign-in through GitHub assigns the `admin` role automatically, and is admitted even if that
+assignment does not happen. If the role ever needs to be set by hand — for example after clearing the Identity
+user list — invite the address from **Identity → Invite users**, then open the user and add `admin` to their
+**Roles** field.
+
+### Sign-in troubleshooting
+
+Netlify Identity reports a refused sign-in by sending the browser back with `#error=…` in the address bar. The
+`/admin` page reads that fragment, explains what went wrong in plain language, and clears it from the URL, so the
+reason for a failed sign-in is on the page rather than in the address bar.
+
+`GET /api/session` reports what the server makes of the current session — whether it is signed in, whether it
+counts as admin, and the email and GitHub username it matched against. When the login page says an account is not
+recognised, it names the value to configure by reading it from there.
 
 ## Local development
 
