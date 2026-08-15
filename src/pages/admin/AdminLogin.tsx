@@ -1,51 +1,66 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAdminUser, handleAuthCallback, oauthLogin, onAuthChange } from '../../lib/identity'
+import {
+  checkAdminAccess,
+  consumeAuthCallback,
+  fetchSession,
+  githubLoginOf,
+  logout,
+  onAuthChange,
+  startGithubLogin,
+  type Session,
+  type User,
+} from '../../lib/identity'
+
+type Status = 'checking' | 'idle' | 'denied' | 'error'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
-  const [status, setStatus] = useState<'checking' | 'idle' | 'denied' | 'error'>('checking')
+  const [status, setStatus] = useState<Status>('checking')
   const [errorMessage, setErrorMessage] = useState('')
+  const [errorHint, setErrorHint] = useState('')
+  const [account, setAccount] = useState<User | null>(null)
+  const [serverView, setServerView] = useState<Session | null>(null)
 
   useEffect(() => {
     let cancelled = false
 
-    async function bootstrap() {
-      try {
-        const result = await handleAuthCallback()
-        if (result?.type === 'oauth' && cancelled === false) {
-          const admin = await getAdminUser()
-          if (admin) {
-            navigate('/admin/dashboard', { replace: true })
-            return
-          }
-          setStatus('denied')
-          return
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setErrorMessage(err instanceof Error ? err.message : 'Sign-in failed.')
-          setStatus('error')
-          return
-        }
-      }
-
-      const admin = await getAdminUser()
-      if (cancelled) return
-      if (admin) {
-        navigate('/admin/dashboard', { replace: true })
-      } else {
-        setStatus('idle')
-      }
+    /** Show the account as the server sees it — that is what the settings must match. */
+    function showDenied(user: User) {
+      setAccount(user)
+      setStatus('denied')
+      fetchSession().then((session) => {
+        if (!cancelled) setServerView(session)
+      })
     }
 
-    bootstrap()
+    consumeAuthCallback().then((outcome) => {
+      if (cancelled) return
 
-    const unsubscribe = onAuthChange(async (event) => {
-      if (event === 'login') {
-        const admin = await getAdminUser()
-        if (admin) navigate('/admin/dashboard', { replace: true })
+      switch (outcome.kind) {
+        case 'admin':
+          navigate('/admin/dashboard', { replace: true })
+          break
+        case 'not-admin':
+          showDenied(outcome.user)
+          break
+        case 'error':
+          setErrorMessage(outcome.message)
+          setErrorHint(outcome.hint || '')
+          setStatus('error')
+          break
+        default:
+          setStatus('idle')
       }
+    })
+
+    const unsubscribe = onAuthChange((event, user) => {
+      if (event !== 'login' || !user) return
+      checkAdminAccess().then((allowed) => {
+        if (cancelled) return
+        if (allowed) navigate('/admin/dashboard', { replace: true })
+        else showDenied(user)
+      })
     })
 
     return () => {
@@ -53,6 +68,27 @@ export default function AdminLogin() {
       unsubscribe()
     }
   }, [navigate])
+
+  async function signOutAndRetry() {
+    await logout().catch(() => undefined)
+    setAccount(null)
+    setServerView(null)
+    setErrorMessage('')
+    setErrorHint('')
+    setStatus('idle')
+  }
+
+  function beginLogin() {
+    const failure = startGithubLogin()
+    if (!failure) return
+    setErrorMessage(failure.message)
+    setErrorHint(failure.hint || '')
+    setStatus('error')
+  }
+
+  const signedInAs =
+    serverView?.login || serverView?.email || (account ? githubLoginOf(account) || account.email : '') || 'this account'
+  const serverSawUsername = Boolean(serverView?.login)
 
   return (
     <div className="login-shell">
@@ -69,20 +105,45 @@ export default function AdminLogin() {
 
         {status === 'checking' && <div className="spinner" style={{ margin: '0 auto' }} />}
 
-        {(status === 'idle' || status === 'denied' || status === 'error') && (
-          <button className="btn btn-primary" onClick={() => oauthLogin('github')}>
+        {(status === 'idle' || status === 'error') && (
+          <button className="btn btn-primary" onClick={beginLogin}>
             Continue with GitHub
           </button>
         )}
 
         {status === 'denied' && (
-          <div className="login-error">
-            This GitHub account isn&rsquo;t the storybook owner, so admin access isn&rsquo;t available. Sign in with
-            the repository owner&rsquo;s GitHub account instead.
-          </div>
+          <>
+            <div className="login-error">
+              Signed in as <strong>{signedInAs}</strong>, but this site does not recognise that account as the
+              storybook&rsquo;s owner.
+            </div>
+            <div className="login-hint">
+              {serverSawUsername ? (
+                <>
+                  Set <code>ADMIN_GITHUB_LOGIN</code> to <code>{serverView?.login}</code> under Project configuration
+                  &rarr; Environment variables, then sign in again.
+                </>
+              ) : (
+                <>
+                  Netlify Identity did not record a GitHub username for this account, so it cannot be matched by name.
+                  Set <code>ADMIN_EMAIL</code> to <code>{serverView?.email || 'the email on this account'}</code>{' '}
+                  under Project configuration &rarr; Environment variables, then sign in again.
+                </>
+              )}{' '}
+              Adding <code>admin</code> to this user&rsquo;s Roles field in the Identity tab works too.
+            </div>
+            <button className="btn btn-primary" onClick={signOutAndRetry}>
+              Sign out and try another account
+            </button>
+          </>
         )}
 
-        {status === 'error' && <div className="login-error">{errorMessage}</div>}
+        {status === 'error' && (
+          <>
+            <div className="login-error">{errorMessage}</div>
+            {errorHint && <div className="login-hint">{errorHint}</div>}
+          </>
+        )}
       </div>
     </div>
   )

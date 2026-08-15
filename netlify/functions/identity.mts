@@ -2,13 +2,20 @@
 //
 // These run server-side whenever someone tries to sign up or log in. They are
 // what makes the admin area owner-only: anybody can click "Sign in with GitHub",
-// but unless the GitHub account matches the repo owner the attempt is denied.
-// The owner has the `admin` role stamped onto their user record, which is what
-// `requireAdmin()` checks on every mutating endpoint.
+// but only the repo owner comes back with the `admin` role stamped onto their
+// user record.
+//
+// Denials here are what the browser sees as `#error=...` in the address bar, so
+// the rules in `lib/owner.ts` are deliberately careful to deny only accounts we
+// can positively identify as somebody else. `requireAdmin()` applies the same
+// rule on every request, so admin access does not depend on these events having
+// fired successfully.
 //
 // The installed `@netlify/functions` (2.8.2) does not ship types for Identity
 // events, so the event shape is described locally. Field names follow the
 // camelCase shape the Identity runtime passes to typed handlers.
+
+import { verdictFor } from './lib/owner.js'
 
 interface IdentityUser {
   email?: string
@@ -21,31 +28,7 @@ interface IdentityEvent {
   deny: (reason?: string) => unknown
 }
 
-const DEFAULT_ADMIN_LOGIN = 'nikhilastories'
-const DENIAL = 'Only the storybook owner can sign in here.'
-
-/** Pull the GitHub username out of whichever metadata key the provider used. */
-function githubLogin(user: IdentityUser): string | undefined {
-  const meta = user.userMetadata || {}
-  const value = meta.user_name || meta.preferred_username || meta.nickname || meta.login
-  return typeof value === 'string' ? value : undefined
-}
-
-function adminLogin(): string {
-  return (Netlify.env.get('ADMIN_GITHUB_LOGIN') || DEFAULT_ADMIN_LOGIN).toLowerCase()
-}
-
-function adminEmail(): string | undefined {
-  return Netlify.env.get('ADMIN_EMAIL')?.toLowerCase()
-}
-
-function isRepoOwner(user: IdentityUser): boolean {
-  const login = githubLogin(user)?.toLowerCase()
-  if (login && login === adminLogin()) return true
-
-  const email = adminEmail()
-  return Boolean(email && user.email?.toLowerCase() === email)
-}
+const DENIAL = 'That GitHub account is not the storybook owner.'
 
 function roles(user: IdentityUser): string[] {
   const value = (user.appMetadata || {}).roles
@@ -66,21 +49,27 @@ function withAdminRole(user: IdentityUser) {
 }
 
 export default {
-  /** Reject non-owners before an account is ever created. */
+  /** Reject accounts we can positively identify as somebody else. */
   userValidate(event: IdentityEvent) {
-    if (!isRepoOwner(event.user)) return event.deny(DENIAL)
+    if (verdictFor(event.user) === 'stranger') return event.deny(DENIAL)
   },
 
   /** The owner completes signup and becomes the admin. */
   userSignup(event: IdentityEvent) {
-    if (!isRepoOwner(event.user)) return event.deny(DENIAL)
-    return withAdminRole(event.user)
+    const verdict = verdictFor(event.user)
+    if (verdict === 'stranger') return event.deny(DENIAL)
+    if (verdict === 'owner') return withAdminRole(event.user)
+    // Unidentifiable: create the account, but grant nothing.
   },
 
-  /** Belt-and-braces: block logins that lack the admin role. */
+  /**
+   * Re-check on every login, so correcting ADMIN_GITHUB_LOGIN or ADMIN_EMAIL
+   * grants the role on the next sign-in without touching the Identity user list.
+   */
   userLogin(event: IdentityEvent) {
     if (roles(event.user).includes('admin')) return
-    if (isRepoOwner(event.user)) return withAdminRole(event.user)
-    return event.deny(DENIAL)
+    const verdict = verdictFor(event.user)
+    if (verdict === 'owner') return withAdminRole(event.user)
+    if (verdict === 'stranger') return event.deny(DENIAL)
   },
 }
