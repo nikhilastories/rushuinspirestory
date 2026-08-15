@@ -1,11 +1,8 @@
 import type { Config } from '@netlify/functions'
 import { getFile, isConfigured, listDir, putFile } from './lib/github.js'
 import { requireAdmin } from './lib/auth.js'
+import { json, withErrorHandling } from './lib/http.js'
 import { parseStory, serializeStory, slugify, storyPath, STORIES_DIR, type StoryFrontmatter } from './lib/stories.js'
-
-function json(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } })
-}
 
 function toSummary(frontmatter: StoryFrontmatter) {
   const { title, slug, status, excerpt, coverImage, createdAt, updatedAt, publishedAt } = frontmatter
@@ -20,7 +17,7 @@ interface CreateStoryBody {
   body?: unknown
 }
 
-export default async (req: Request) => {
+export default withErrorHandling(async (req: Request) => {
   if (!isConfigured()) {
     return json(
       { error: 'The storybook is not connected to GitHub yet. Set a GITHUB_TOKEN environment variable to continue.' },
@@ -100,7 +97,7 @@ export default async (req: Request) => {
   }
 
   return json({ error: 'Method not allowed' }, 405)
-}
+})
 
 export const config: Config = {
   path: '/api/stories',

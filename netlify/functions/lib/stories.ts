@@ -31,8 +31,47 @@ export function parseStory(raw: string): ParsedStory {
   return { frontmatter: data as StoryFrontmatter, body: content.trim() }
 }
 
+/** Key order used when writing frontmatter, so files stay diff-friendly across edits. */
+const FRONTMATTER_KEYS: (keyof StoryFrontmatter)[] = [
+  'title',
+  'slug',
+  'status',
+  'excerpt',
+  'coverImage',
+  'createdAt',
+  'updatedAt',
+  'publishedAt',
+]
+
+/** Optional fields: omitted entirely when empty rather than written as a blank value. */
+const OPTIONAL_KEYS = new Set<string>(['coverImage', 'publishedAt'])
+
+/**
+ * Drop fields that have no value. YAML cannot represent `undefined`, and handing one
+ * to `matter.stringify` throws, so an absent `coverImage` or `publishedAt` must be
+ * omitted from the object rather than set to undefined.
+ */
+function cleanFrontmatter(frontmatter: StoryFrontmatter): Record<string, unknown> {
+  const cleaned: Record<string, unknown> = {}
+
+  const write = (key: string, value: unknown) => {
+    if (value === undefined || value === null) return
+    if (OPTIONAL_KEYS.has(key) && typeof value === 'string' && !value.trim()) return
+    cleaned[key] = value
+  }
+
+  for (const key of FRONTMATTER_KEYS) write(key, frontmatter[key])
+
+  // Preserve any extra keys an author added by hand to the markdown file.
+  for (const [key, value] of Object.entries(frontmatter)) {
+    if (!(FRONTMATTER_KEYS as string[]).includes(key)) write(key, value)
+  }
+
+  return cleaned
+}
+
 export function serializeStory(frontmatter: StoryFrontmatter, body: string): string {
-  return matter.stringify(`\n${body.trim()}\n`, frontmatter)
+  return matter.stringify(`\n${body.trim()}\n`, cleanFrontmatter(frontmatter))
 }
 
 export function slugify(input: string): string {
@@ -47,4 +86,37 @@ export function slugify(input: string): string {
 
 export function isValidStatus(value: unknown): value is StoryStatus {
   return typeof value === 'string' && (STORY_STATUSES as string[]).includes(value)
+}
+
+/** The subset of an update request that has already been read off the wire. */
+export interface StoryUpdate {
+  title?: unknown
+  excerpt?: unknown
+  coverImage?: unknown
+  status?: unknown
+}
+
+/**
+ * Build the frontmatter a story should have after an edit or a status change.
+ * Kept pure so the draft → review → published transitions can be exercised
+ * without a GitHub round trip.
+ */
+export function nextStoryFrontmatter(
+  current: StoryFrontmatter,
+  updates: StoryUpdate,
+  now: string,
+): StoryFrontmatter {
+  const nextStatus = isValidStatus(updates.status) ? updates.status : current.status
+
+  return {
+    ...current,
+    title: typeof updates.title === 'string' && updates.title.trim() ? updates.title.trim() : current.title,
+    excerpt: typeof updates.excerpt === 'string' ? updates.excerpt.trim() : current.excerpt,
+    coverImage: typeof updates.coverImage === 'string' ? updates.coverImage || undefined : current.coverImage,
+    status: nextStatus,
+    updatedAt: now,
+    // Stamped the first time a story reaches "published" and preserved afterwards,
+    // so sending a published story back for review does not lose its original date.
+    publishedAt: nextStatus === 'published' ? current.publishedAt || now : current.publishedAt,
+  }
 }
