@@ -149,4 +149,43 @@ check('clearing a collection removes the key', () => {
   assert.ok(!('collection' in parseStory(cleared).frontmatter))
 })
 
+check('a story with no category omits the key entirely', () => {
+  const { frontmatter } = parseStory(noCover)
+  assert.ok(!('category' in frontmatter), 'category must be absent, not undefined')
+})
+
+check('a single category is written as a plain string', () => {
+  const filed = put(draft, { category: ['bedtime-voyages'] }, '2026-08-16T09:00:00.000Z')
+  assert.equal(parseStory(filed).frontmatter.category, 'bedtime-voyages')
+})
+
+check('several categories are written as a list', () => {
+  const filed = put(draft, { category: ['bedtime-voyages', 'curious-questions'] }, '2026-08-16T09:00:00.000Z')
+  assert.deepEqual(parseStory(filed).frontmatter.category, ['bedtime-voyages', 'curious-questions'])
+})
+
+check('categories survive the whole draft -> review -> published trip', () => {
+  const filed = put(draft, { category: ['bedtime-voyages'] }, '2026-08-16T09:00:00.000Z')
+  const r = put(filed, { status: 'review' }, '2026-08-16T10:00:00.000Z')
+  const pub = put(r, { status: 'published' }, '2026-08-17T09:00:00.000Z')
+  assert.equal(parseStory(pub).frontmatter.category, 'bedtime-voyages')
+})
+
+check('an omitted category leaves the existing one untouched', () => {
+  const filed = put(draft, { category: ['bedtime-voyages'] }, '2026-08-16T09:00:00.000Z')
+  const renamed = put(filed, { title: 'A new title' }, '2026-08-16T12:00:00.000Z')
+  assert.equal(parseStory(renamed).frontmatter.category, 'bedtime-voyages')
+})
+
+check('clearing categories removes the key', () => {
+  const filed = put(draft, { category: ['bedtime-voyages'] }, '2026-08-16T09:00:00.000Z')
+  const cleared = put(filed, { category: [] }, '2026-08-16T11:00:00.000Z')
+  assert.ok(!('category' in parseStory(cleared).frontmatter))
+})
+
+check('blank and duplicate category slugs are discarded', () => {
+  const filed = put(draft, { category: ['  bedtime-voyages ', 'bedtime-voyages', '  '] }, '2026-08-16T09:00:00.000Z')
+  assert.equal(parseStory(filed).frontmatter.category, 'bedtime-voyages')
+})
+
 console.log(`\n${passed} passed\n`)

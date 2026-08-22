@@ -6,6 +6,7 @@ import { api } from '../../lib/api'
 import { renderMarkdown } from '../../lib/markdown'
 import { slugify } from '../../lib/slug'
 import { usePageMeta } from '../../lib/meta'
+import { CATEGORIES, toCategorySlugs } from '../../lib/categories'
 import type { StoryDetail } from '../../types'
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024
@@ -37,6 +38,7 @@ export default function StoryEditor() {
   const [excerpt, setExcerpt] = useState('')
   const [collection, setCollection] = useState('')
   const [knownCollections, setKnownCollections] = useState<string[]>([])
+  const [categories, setCategories] = useState<string[]>([])
   const [body, setBody] = useState('')
   const [coverImage, setCoverImage] = useState('')
   const [status, setStatus] = useState<string>('draft')
@@ -62,6 +64,7 @@ export default function StoryEditor() {
         setTitle(story.title)
         setExcerpt(story.excerpt)
         setCollection(story.collection || '')
+        setCategories(toCategorySlugs(story.category))
         setBody(story.body)
         setCoverImage(story.coverImage || '')
         setStatus(story.status)
@@ -105,11 +108,25 @@ export default function StoryEditor() {
     setNotice('')
     try {
       if (isNew) {
-        const created = await api.createStory({ title, excerpt, body, collection, coverImage: coverImage || undefined })
+        const created = await api.createStory({
+          title,
+          excerpt,
+          body,
+          collection,
+          category: categories,
+          coverImage: coverImage || undefined,
+        })
         navigate(`/admin/stories/${created.slug}/edit`, { replace: true })
         setNotice('Draft saved.')
       } else {
-        const updated = await api.updateStory(currentSlug, { title, excerpt, body, collection, coverImage })
+        const updated = await api.updateStory(currentSlug, {
+          title,
+          excerpt,
+          body,
+          collection,
+          category: categories,
+          coverImage,
+        })
         setStatus(updated.status)
         setNotice('Saved.')
       }
@@ -178,6 +195,35 @@ export default function StoryEditor() {
               <div className="field-hint">
                 Optional. Stories sharing a collection appear together on the Collections page; leave it blank and the
                 story is shelved by the year it was published.
+              </div>
+            </div>
+
+            <div className="field">
+              <label>Categories</label>
+              <div className="category-picker">
+                {CATEGORIES.map((category) => {
+                  const checked = categories.includes(category.slug)
+                  return (
+                    <label key={category.slug} className="category-picker__option">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) =>
+                          setCategories((current) =>
+                            e.target.checked
+                              ? [...current, category.slug]
+                              : current.filter((slug) => slug !== category.slug),
+                          )
+                        }
+                      />
+                      {category.label}
+                    </label>
+                  )
+                })}
+              </div>
+              <div className="field-hint">
+                Pick one or more. The list comes from <code>categories.json</code> &mdash; add an entry there to offer a
+                new category here and on the Stories page.
               </div>
             </div>
 

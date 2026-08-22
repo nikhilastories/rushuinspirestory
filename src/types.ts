@@ -5,6 +5,8 @@ export interface StorySummary {
   title: string
   /** Optional shelf a story belongs to; absent stories fall back to their year. */
   collection?: string
+  /** One or more category slugs from `categories.json`. */
+  category?: string | string[]
   excerpt: string
   coverImage?: string
   status: StoryStatus
@@ -21,6 +23,7 @@ export interface StoryDetail extends StorySummary {
 export interface StoryInput {
   title: string
   collection?: string
+  category?: string | string[]
   excerpt: string
   body: string
   coverImage?: string

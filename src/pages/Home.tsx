@@ -35,8 +35,8 @@ export default function Home() {
             <Link to="/stories" className="btn btn-gold">
               Read the Stories
             </Link>
-            <Link to="/about" className="btn btn-secondary" style={{ borderColor: 'rgba(255,253,248,0.35)', color: 'var(--paper)' }}>
-              Meet Rushu
+            <Link to="/authors-note" className="btn btn-secondary" style={{ borderColor: 'rgba(255,253,248,0.35)', color: 'var(--paper)' }}>
+              Author&rsquo;s Note
             </Link>
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function Home() {
           {stories && stories.length === 0 && (
             <div className="empty-state">
               <h3>The first story is being written&hellip;</h3>
-              <p>Check back soon &mdash; Rushu&rsquo;s adventures are on their way.</p>
+              <p>Check back soon &mdash; new adventures are on their way.</p>
             </div>
           )}
 

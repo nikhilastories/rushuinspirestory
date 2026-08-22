@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import Nav from './components/Nav'
 import Footer from './components/Footer'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -8,7 +8,7 @@ import Home from './pages/Home'
 import Stories from './pages/Stories'
 import Collections from './pages/Collections'
 import StoryDetail from './pages/StoryDetail'
-import About from './pages/About'
+import AuthorsNote from './pages/AuthorsNote'
 import NotFound from './pages/NotFound'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -38,7 +38,9 @@ export default function App() {
           <Route path="/stories" element={<Stories />} />
           <Route path="/stories/:slug" element={<StoryDetail />} />
           <Route path="/collections" element={<Collections />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/authors-note" element={<AuthorsNote />} />
+          {/* The About page became the Author's Note; keep old links working. */}
+          <Route path="/about" element={<Navigate to="/authors-note" replace />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route
             path="/admin/dashboard"

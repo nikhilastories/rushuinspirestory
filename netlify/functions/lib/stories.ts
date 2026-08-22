@@ -10,6 +10,8 @@ export interface StoryFrontmatter {
   status: StoryStatus
   /** Optional shelf a story belongs to. Stories without one are grouped by year. */
   collection?: string
+  /** One or more category slugs, validated at build time against `categories.json`. */
+  category?: string | string[]
   excerpt: string
   coverImage?: string
   createdAt: string
@@ -39,6 +41,7 @@ const FRONTMATTER_KEYS: (keyof StoryFrontmatter)[] = [
   'slug',
   'status',
   'collection',
+  'category',
   'excerpt',
   'coverImage',
   'createdAt',
@@ -47,7 +50,7 @@ const FRONTMATTER_KEYS: (keyof StoryFrontmatter)[] = [
 ]
 
 /** Optional fields: omitted entirely when empty rather than written as a blank value. */
-const OPTIONAL_KEYS = new Set<string>(['collection', 'coverImage', 'publishedAt'])
+const OPTIONAL_KEYS = new Set<string>(['collection', 'category', 'coverImage', 'publishedAt'])
 
 /**
  * Drop fields that have no value. YAML cannot represent `undefined`, and handing one
@@ -60,6 +63,7 @@ function cleanFrontmatter(frontmatter: StoryFrontmatter): Record<string, unknown
   const write = (key: string, value: unknown) => {
     if (value === undefined || value === null) return
     if (OPTIONAL_KEYS.has(key) && typeof value === 'string' && !value.trim()) return
+    if (OPTIONAL_KEYS.has(key) && Array.isArray(value) && value.length === 0) return
     cleaned[key] = value
   }
 
@@ -95,9 +99,26 @@ export function isValidStatus(value: unknown): value is StoryStatus {
 export interface StoryUpdate {
   title?: unknown
   collection?: unknown
+  category?: unknown
   excerpt?: unknown
   coverImage?: unknown
   status?: unknown
+}
+
+/**
+ * Categories arrive from the editor as a string or a list of strings. Empty values
+ * collapse to `undefined` so the key is dropped from the file rather than written blank.
+ */
+export function normalizeCategory(value: unknown): string | string[] | undefined {
+  const raw = Array.isArray(value) ? value : [value]
+  const slugs: string[] = []
+  for (const entry of raw) {
+    if (typeof entry !== 'string') continue
+    const slug = entry.trim()
+    if (slug && !slugs.includes(slug)) slugs.push(slug)
+  }
+  if (slugs.length === 0) return undefined
+  return slugs.length === 1 ? slugs[0] : slugs
 }
 
 /**
@@ -117,6 +138,7 @@ export function nextStoryFrontmatter(
     title: typeof updates.title === 'string' && updates.title.trim() ? updates.title.trim() : current.title,
     collection:
       typeof updates.collection === 'string' ? updates.collection.trim() || undefined : current.collection,
+    category: updates.category === undefined ? current.category : normalizeCategory(updates.category),
     excerpt: typeof updates.excerpt === 'string' ? updates.excerpt.trim() : current.excerpt,
     coverImage: typeof updates.coverImage === 'string' ? updates.coverImage || undefined : current.coverImage,
     status: nextStatus,

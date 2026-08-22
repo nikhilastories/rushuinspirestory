@@ -44,8 +44,8 @@ export default function Nav() {
               </NavLink>
             </li>
             <li>
-              <NavLink to="/about" className={({ isActive }) => (isActive ? 'active' : '')}>
-                About
+              <NavLink to="/authors-note" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Author&rsquo;s Note
               </NavLink>
             </li>
           </ul>
