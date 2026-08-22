@@ -5,6 +5,7 @@ import StatusPill from '../../components/StatusPill'
 import { api } from '../../lib/api'
 import { renderMarkdown } from '../../lib/markdown'
 import { slugify } from '../../lib/slug'
+import { usePageMeta } from '../../lib/meta'
 import type { StoryDetail } from '../../types'
 
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024
@@ -34,10 +35,24 @@ export default function StoryEditor() {
 
   const [title, setTitle] = useState('')
   const [excerpt, setExcerpt] = useState('')
+  const [collection, setCollection] = useState('')
+  const [knownCollections, setKnownCollections] = useState<string[]>([])
   const [body, setBody] = useState('')
   const [coverImage, setCoverImage] = useState('')
   const [status, setStatus] = useState<string>('draft')
   const [currentSlug, setCurrentSlug] = useState(slug || '')
+
+  usePageMeta(isNew ? 'New story' : `Editing ${title || 'story'}`)
+
+  useEffect(() => {
+    api
+      .listAll()
+      .then((all) => {
+        const names = [...new Set(all.map((s) => s.collection?.trim()).filter((n): n is string => Boolean(n)))]
+        setKnownCollections(names.sort((a, b) => a.localeCompare(b)))
+      })
+      .catch(() => setKnownCollections([]))
+  }, [])
 
   useEffect(() => {
     if (isNew) return
@@ -46,6 +61,7 @@ export default function StoryEditor() {
       .then((story: StoryDetail) => {
         setTitle(story.title)
         setExcerpt(story.excerpt)
+        setCollection(story.collection || '')
         setBody(story.body)
         setCoverImage(story.coverImage || '')
         setStatus(story.status)
@@ -89,11 +105,11 @@ export default function StoryEditor() {
     setNotice('')
     try {
       if (isNew) {
-        const created = await api.createStory({ title, excerpt, body, coverImage: coverImage || undefined })
+        const created = await api.createStory({ title, excerpt, body, collection, coverImage: coverImage || undefined })
         navigate(`/admin/stories/${created.slug}/edit`, { replace: true })
         setNotice('Draft saved.')
       } else {
-        const updated = await api.updateStory(currentSlug, { title, excerpt, body, coverImage })
+        const updated = await api.updateStory(currentSlug, { title, excerpt, body, collection, coverImage })
         setStatus(updated.status)
         setNotice('Saved.')
       }
@@ -143,6 +159,26 @@ export default function StoryEditor() {
                 onChange={(e) => setExcerpt(e.target.value)}
                 placeholder="A one or two sentence teaser shown on the story cards…"
               />
+            </div>
+
+            <div className="field">
+              <label>Collection</label>
+              <input
+                type="text"
+                value={collection}
+                onChange={(e) => setCollection(e.target.value)}
+                placeholder="Bedtime Voyages"
+                list="collection-suggestions"
+              />
+              <datalist id="collection-suggestions">
+                {knownCollections.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
+              <div className="field-hint">
+                Optional. Stories sharing a collection appear together on the Collections page; leave it blank and the
+                story is shelved by the year it was published.
+              </div>
             </div>
 
             <div className="field">

@@ -7,6 +7,7 @@ import { nextStoryFrontmatter, parseStory, serializeStory, storyPath } from './l
 /** Untrusted request body for updating a story — every field is validated below. */
 interface UpdateStoryBody {
   title?: unknown
+  collection?: unknown
   excerpt?: unknown
   coverImage?: unknown
   status?: unknown

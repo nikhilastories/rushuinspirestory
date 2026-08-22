@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import StoryCard from '../components/StoryCard'
 import { api } from '../lib/api'
+import { usePageMeta } from '../lib/meta'
 import type { StorySummary } from '../types'
 
 export default function Home() {
   const [stories, setStories] = useState<StorySummary[] | null>(null)
+
+  usePageMeta()
 
   useEffect(() => {
     api
@@ -17,22 +20,17 @@ export default function Home() {
   return (
     <>
       <section className="hero">
-        <div className="hero__moon" aria-hidden="true" />
-        <div className="stars-scatter" aria-hidden="true">
-          <span style={{ top: '18%', left: '62%', fontSize: '1.4rem', animationDelay: '0s' }}>✦</span>
-          <span style={{ top: '34%', left: '78%', fontSize: '0.9rem', animationDelay: '1.1s' }}>✧</span>
-          <span style={{ top: '58%', left: '68%', fontSize: '1.1rem', animationDelay: '2s' }}>✦</span>
-        </div>
+        <div className="hero__scrim" aria-hidden="true" />
         <div className="container hero__inner">
-          <span className="hero__eyebrow">✦ A bedtime storybook, written with love</span>
-          <h1>
-            A Son&rsquo;s <em>Spark</em>,<br />a Mother&rsquo;s <em>Magic</em>
-          </h1>
+          <h1>Atlas of Everyday Magic</h1>
+          <p className="hero__subhead">Charting wonder from life&rsquo;s little moments</p>
           <p>
-            Every night, Rushu asks a question, notices a bug in the garden, or invents an entire kingdom out of
-            couch cushions. His mother writes down where his imagination goes. This is that collection &mdash; true
-            tales, tall tales, and everything in between.
+            Step into a world where tiny ideas grow wings, where ordinary moments open doors to extraordinary
+            adventures, and every page holds a quiet wonder. Woven from a child&rsquo;s boundless daydreams, where
+            imagination knows no boundaries, and a mother&rsquo;s magic turns dreams into stories. A world waiting to
+            be found.
           </p>
+          <p className="hero__closing">Dream the impossible. Imagine the unseen. Live the magic.</p>
           <div className="hero__actions">
             <Link to="/stories" className="btn btn-gold">
               Read the Stories

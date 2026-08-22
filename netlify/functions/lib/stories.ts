@@ -8,6 +8,8 @@ export interface StoryFrontmatter {
   title: string
   slug: string
   status: StoryStatus
+  /** Optional shelf a story belongs to. Stories without one are grouped by year. */
+  collection?: string
   excerpt: string
   coverImage?: string
   createdAt: string
@@ -36,6 +38,7 @@ const FRONTMATTER_KEYS: (keyof StoryFrontmatter)[] = [
   'title',
   'slug',
   'status',
+  'collection',
   'excerpt',
   'coverImage',
   'createdAt',
@@ -44,7 +47,7 @@ const FRONTMATTER_KEYS: (keyof StoryFrontmatter)[] = [
 ]
 
 /** Optional fields: omitted entirely when empty rather than written as a blank value. */
-const OPTIONAL_KEYS = new Set<string>(['coverImage', 'publishedAt'])
+const OPTIONAL_KEYS = new Set<string>(['collection', 'coverImage', 'publishedAt'])
 
 /**
  * Drop fields that have no value. YAML cannot represent `undefined`, and handing one
@@ -91,6 +94,7 @@ export function isValidStatus(value: unknown): value is StoryStatus {
 /** The subset of an update request that has already been read off the wire. */
 export interface StoryUpdate {
   title?: unknown
+  collection?: unknown
   excerpt?: unknown
   coverImage?: unknown
   status?: unknown
@@ -111,6 +115,8 @@ export function nextStoryFrontmatter(
   return {
     ...current,
     title: typeof updates.title === 'string' && updates.title.trim() ? updates.title.trim() : current.title,
+    collection:
+      typeof updates.collection === 'string' ? updates.collection.trim() || undefined : current.collection,
     excerpt: typeof updates.excerpt === 'string' ? updates.excerpt.trim() : current.excerpt,
     coverImage: typeof updates.coverImage === 'string' ? updates.coverImage || undefined : current.coverImage,
     status: nextStatus,

@@ -177,6 +177,17 @@ button {
   color: var(--ink-soft);
 }
 
+/* The wordmark is longer than the nav has room for on small screens. */
+@media (max-width: 620px) {
+  .brand__title {
+    font-size: 1.05rem;
+  }
+
+  .brand__subtitle {
+    display: none;
+  }
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -319,9 +330,36 @@ button {
 .hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(160deg, var(--night) 0%, var(--night-light) 70%, #3a2f57 100%);
+  /* The artwork is portrait, so it was recomposed as a wide banner: the scene
+     sits right of centre and the copy runs over the softened left edge. */
+  background-color: var(--night);
+  background-image: url('/hero-atlas-of-everyday-magic.jpg');
+  background-size: cover;
+  background-position: center 38%;
+  background-repeat: no-repeat;
   color: var(--paper);
   padding: 96px 0 110px;
+}
+
+/* Keeps the left-aligned copy legible over the illustration. The copy column is
+   centred with .container, so the shaded side is anchored to that column rather
+   than to a percentage of the viewport — otherwise wide screens slide the text
+   off the shade and onto the artwork. */
+.hero__scrim {
+  --hero-gutter: max(0px, (100vw - 1120px) / 2);
+
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(20, 22, 42, 0.95) 0,
+      rgba(20, 22, 42, 0.9) calc(var(--hero-gutter) + 560px),
+      rgba(20, 22, 42, 0.72) calc(var(--hero-gutter) + 760px),
+      rgba(20, 22, 42, 0.15) calc(var(--hero-gutter) + 1120px)
+    ),
+    linear-gradient(to top, rgba(20, 22, 42, 0.6) 0%, transparent 45%);
 }
 
 .hero__inner {
@@ -330,23 +368,12 @@ button {
   max-width: 680px;
 }
 
-.hero__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--gold-light);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  margin-bottom: 22px;
-}
-
 .hero h1 {
   color: var(--paper);
   font-size: clamp(2.6rem, 5vw, 4rem);
   line-height: 1.08;
   font-weight: 600;
+  text-shadow: 0 2px 18px rgba(12, 12, 26, 0.55);
 }
 
 .hero h1 em {
@@ -359,6 +386,24 @@ button {
   font-size: 1.15rem;
   color: rgba(255, 253, 248, 0.82);
   max-width: 540px;
+  text-shadow: 0 1px 10px rgba(12, 12, 26, 0.5);
+}
+
+.hero .hero__subhead {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+  color: var(--gold-light);
+  margin-top: 16px;
+}
+
+.hero .hero__closing {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--paper);
+  margin-top: 22px;
 }
 
 .hero__actions {
@@ -368,16 +413,22 @@ button {
   flex-wrap: wrap;
 }
 
-.hero__moon {
-  position: absolute;
-  right: -60px;
-  top: -40px;
-  width: 340px;
-  height: 340px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--gold) 60%, transparent 72%);
-  opacity: 0.35;
-  filter: blur(2px);
+@media (max-width: 760px) {
+  .hero {
+    /* Portrait viewports crop horizontally — hold the focal point in frame. */
+    background-position: 78% center;
+    padding: 72px 0 84px;
+  }
+
+  .hero__scrim {
+    background:
+      linear-gradient(
+        170deg,
+        rgba(20, 22, 42, 0.7) 0%,
+        rgba(20, 22, 42, 0.86) 45%,
+        rgba(20, 22, 42, 0.93) 100%
+      );
+  }
 }
 
 /* ---------- Sections ---------- */
@@ -507,6 +558,35 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+/* ---------- Collections ---------- */
+
+.collection + .collection {
+  margin-top: 64px;
+}
+
+.collection__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.collection__head h3 {
+  font-size: clamp(1.4rem, 2.4vw, 1.75rem);
+}
+
+.collection__count {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rose);
 }
 
 /* ---------- Empty state ---------- */
@@ -668,6 +748,25 @@ button {
   margin-top: 18px;
   opacity: 0.6;
   font-size: 0.8rem;
+}
+
+.site-footer .site-footer__legal {
+  margin-top: 34px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 253, 248, 0.12);
+  opacity: 0.55;
+}
+
+.site-footer--minimal {
+  padding: 22px 0;
+  background: var(--night);
+}
+
+.site-footer--minimal .site-footer__legal {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+  text-align: center;
 }
 
 /* ---------- Admin ---------- */

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { SITE_NAME, usePageMeta } from '../../lib/meta'
 import {
   checkAdminAccess,
   consumeAuthCallback,
@@ -16,6 +17,7 @@ type Status = 'checking' | 'idle' | 'denied' | 'error'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
+  usePageMeta('Storyteller login')
   const [status, setStatus] = useState<Status>('checking')
   const [errorMessage, setErrorMessage] = useState('')
   const [errorHint, setErrorHint] = useState('')
@@ -99,8 +101,8 @@ export default function AdminLogin() {
         </svg>
         <h1>Storyteller Login</h1>
         <p>
-          This corner of the storybook belongs to Rushu&rsquo;s mama. Sign in with the GitHub account that owns this
-          storybook&rsquo;s repository to draft, review, and publish new tales.
+          This corner of {SITE_NAME} belongs to Rushu&rsquo;s mama. Sign in with the GitHub account that owns this
+          site&rsquo;s repository to draft, review, and publish new tales.
         </p>
 
         {status === 'checking' && <div className="spinner" style={{ margin: '0 auto' }} />}

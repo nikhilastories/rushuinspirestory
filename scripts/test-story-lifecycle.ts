@@ -129,4 +129,24 @@ check('hand-written extra frontmatter keys survive a status change', () => {
   assert.deepEqual((parseStory(out).frontmatter as Record<string, unknown>).tags, ['bedtime'])
 })
 
+check('a story with no collection omits the key entirely', () => {
+  const { frontmatter } = parseStory(noCover)
+  assert.ok(!('collection' in frontmatter), 'collection must be absent, not undefined')
+})
+
+check('a collection survives the whole draft -> review -> published trip', () => {
+  const shelved = put(draft, { collection: 'Bedtime Voyages' }, '2026-08-16T09:00:00.000Z')
+  assert.equal(parseStory(shelved).frontmatter.collection, 'Bedtime Voyages')
+
+  const r = put(shelved, { status: 'review' }, '2026-08-16T10:00:00.000Z')
+  const pub = put(r, { status: 'published' }, '2026-08-17T09:00:00.000Z')
+  assert.equal(parseStory(pub).frontmatter.collection, 'Bedtime Voyages')
+})
+
+check('clearing a collection removes the key', () => {
+  const shelved = put(draft, { collection: 'Bedtime Voyages' }, '2026-08-16T09:00:00.000Z')
+  const cleared = put(shelved, { collection: '  ' }, '2026-08-16T11:00:00.000Z')
+  assert.ok(!('collection' in parseStory(cleared).frontmatter))
+})
+
 console.log(`\n${passed} passed\n`)

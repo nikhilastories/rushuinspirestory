@@ -28,11 +28,11 @@ export const api = {
   listPublished: () => request<StorySummary[]>('/api/stories'),
   listAll: () => request<StorySummary[]>('/api/stories?all=1'),
   getStory: (slug: string) => request<StoryDetail>(`/api/stories/${encodeURIComponent(slug)}`),
-  createStory: (input: { title: string; excerpt: string; body: string; coverImage?: string }) =>
+  createStory: (input: { title: string; excerpt: string; body: string; coverImage?: string; collection?: string }) =>
     request<StoryDetail>('/api/stories', { method: 'POST', body: JSON.stringify(input) }),
   updateStory: (
     slug: string,
-    input: Partial<{ title: string; excerpt: string; body: string; coverImage: string; status: StoryStatus }>,
+    input: Partial<{ title: string; collection: string; excerpt: string; body: string; coverImage: string; status: StoryStatus }>,
   ) => request<StoryDetail>(`/api/stories/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(input) }),
   deleteStory: (slug: string) => request<void>(`/api/stories/${encodeURIComponent(slug)}`, { method: 'DELETE' }),
   uploadImage: (input: { slug: string; filename: string; contentType: string; dataBase64: string }) =>
