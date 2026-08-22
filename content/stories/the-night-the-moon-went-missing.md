@@ -1,7 +1,7 @@
 ---
 title: The Night the moon went missing
 slug: the-night-the-moon-went-missing
-status: draft
+status: review
 collection: Curious Questions
 category: curious-questions
 excerpt: |-
@@ -10,7 +10,7 @@ excerpt: |-
 coverImage: >-
   /api/images/the-night-the-moon-went-missing/133950356261945551-1787418805619.jpg
 createdAt: '2026-08-22T17:14:30.475Z'
-updatedAt: '2026-08-22T17:14:30.475Z'
+updatedAt: '2026-08-22T17:14:44.255Z'
 ---
 
 *The Night moon went missing*
