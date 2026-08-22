@@ -5,13 +5,14 @@ import { json, withErrorHandling } from './lib/http.js'
 import { parseStory, serializeStory, slugify, storyPath, STORIES_DIR, type StoryFrontmatter } from './lib/stories.js'
 
 function toSummary(frontmatter: StoryFrontmatter) {
-  const { title, slug, status, excerpt, coverImage, createdAt, updatedAt, publishedAt } = frontmatter
-  return { title, slug, status, excerpt, coverImage, createdAt, updatedAt, publishedAt }
+  const { title, slug, status, collection, excerpt, coverImage, createdAt, updatedAt, publishedAt } = frontmatter
+  return { title, slug, status, collection, excerpt, coverImage, createdAt, updatedAt, publishedAt }
 }
 
 /** Untrusted request body for creating a story — every field is validated below. */
 interface CreateStoryBody {
   title?: unknown
+  collection?: unknown
   excerpt?: unknown
   coverImage?: unknown
   body?: unknown
@@ -84,6 +85,8 @@ export default withErrorHandling(async (req: Request) => {
       title,
       slug,
       status: 'draft',
+      collection:
+        typeof body.collection === 'string' && body.collection.trim() ? body.collection.trim() : undefined,
       excerpt: typeof body.excerpt === 'string' ? body.excerpt.trim() : '',
       coverImage: typeof body.coverImage === 'string' && body.coverImage ? body.coverImage : undefined,
       createdAt: now,

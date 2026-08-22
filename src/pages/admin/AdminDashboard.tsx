@@ -4,6 +4,7 @@ import AdminTopbar from './AdminTopbar'
 import StatusPill from '../../components/StatusPill'
 import { api } from '../../lib/api'
 import { formatDate } from '../../lib/format'
+import { usePageMeta } from '../../lib/meta'
 import type { StoryStatus, StorySummary } from '../../types'
 
 const TABS: { key: 'all' | StoryStatus; label: string }[] = [
@@ -18,6 +19,8 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState<'all' | StoryStatus>('all')
   const [error, setError] = useState('')
   const [busySlug, setBusySlug] = useState<string | null>(null)
+
+  usePageMeta('Manage stories')
 
   function load() {
     api

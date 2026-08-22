@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
+import { usePageMeta } from '../lib/meta'
 
 export default function NotFound() {
+  usePageMeta('Page not found')
+
   return (
     <div className="story-detail">
       <div className="empty-state">

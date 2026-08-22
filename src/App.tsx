@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { consumeAuthCallback, hasAuthCallback } from './lib/identity'
 import Home from './pages/Home'
 import Stories from './pages/Stories'
+import Collections from './pages/Collections'
 import StoryDetail from './pages/StoryDetail'
 import About from './pages/About'
 import NotFound from './pages/NotFound'
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/stories" element={<Stories />} />
           <Route path="/stories/:slug" element={<StoryDetail />} />
+          <Route path="/collections" element={<Collections />} />
           <Route path="/about" element={<About />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route
@@ -65,7 +67,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      {!isAdminRoute && <Footer />}
+      <Footer variant={isAdminRoute ? 'minimal' : 'full'} />
     </>
   )
 }

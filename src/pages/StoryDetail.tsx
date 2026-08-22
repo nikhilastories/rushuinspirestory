@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
+import { SITE_DESCRIPTION, usePageMeta } from '../lib/meta'
 import { renderMarkdown } from '../lib/markdown'
 import { formatDate } from '../lib/format'
 import type { StoryDetail as StoryDetailType } from '../types'
@@ -8,6 +9,12 @@ import type { StoryDetail as StoryDetailType } from '../types'
 export default function StoryDetail() {
   const { slug = '' } = useParams()
   const [story, setStory] = useState<StoryDetailType | null | 'not-found'>(null)
+
+  const loaded = story && story !== 'not-found' ? story : null
+  usePageMeta(
+    loaded ? loaded.title : story === 'not-found' ? 'Story not found' : 'Stories',
+    loaded?.excerpt || SITE_DESCRIPTION,
+  )
 
   useEffect(() => {
     setStory(null)
@@ -44,7 +51,7 @@ export default function StoryDetail() {
       <Link to="/stories" className="story-detail__back">
         ← Back to Stories
       </Link>
-      <span className="kicker">A tale for Rushu</span>
+      <span className="kicker">A tale from the Atlas</span>
       <h1>{story.title}</h1>
       <div className="story-detail__meta">{formatDate(story.publishedAt || story.updatedAt)}</div>
       {story.coverImage && <img className="story-detail__cover" src={story.coverImage} alt={story.title} />}

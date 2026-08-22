@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { SITE_NAME, SITE_TAGLINE } from '../lib/meta'
 
 function MoonMark() {
   return (
@@ -19,9 +20,9 @@ export default function Nav() {
             <MoonMark />
           </span>
           <span>
-            <span className="brand__title">Rushu&rsquo;s Storybook</span>
+            <span className="brand__title">{SITE_NAME}</span>
             <br />
-            <span className="brand__subtitle">A Son&rsquo;s Spark, A Mother&rsquo;s Magic</span>
+            <span className="brand__subtitle">{SITE_TAGLINE}</span>
           </span>
         </NavLink>
 
@@ -35,6 +36,11 @@ export default function Nav() {
             <li>
               <NavLink to="/stories" className={({ isActive }) => (isActive ? 'active' : '')}>
                 Stories
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/collections" className={({ isActive }) => (isActive ? 'active' : '')}>
+                Collections
               </NavLink>
             </li>
             <li>

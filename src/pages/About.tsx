@@ -1,4 +1,11 @@
+import { usePageMeta } from '../lib/meta'
+
 export default function About() {
+  usePageMeta(
+    'About',
+    'The story behind the Atlas of Everyday Magic — a child’s boundless daydreams and a mother’s magic, turned into stories.',
+  )
+
   return (
     <section className="about-hero">
       <div className="container">
@@ -15,7 +22,7 @@ export default function About() {
             </p>
             <p style={{ marginTop: 24, color: 'var(--ink-soft)', fontSize: '1.05rem', lineHeight: 1.8 }}>
               His mother started writing the answers down &mdash; not the real ones, but the ones his imagination
-              already believed. What began as a few notebook pages became this storybook: every tale sparked by
+              already believed. What began as a few notebook pages became the Atlas of Everyday Magic: every tale sparked by
               something Rushu said, dreamed, or wondered out loud.
             </p>
             <p style={{ marginTop: 24, color: 'var(--ink-soft)', fontSize: '1.05rem', lineHeight: 1.8 }}>

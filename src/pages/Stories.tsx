@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
 import StoryCard from '../components/StoryCard'
 import { api } from '../lib/api'
+import { usePageMeta } from '../lib/meta'
 import type { StorySummary } from '../types'
 
 export default function Stories() {
   const [stories, setStories] = useState<StorySummary[] | null>(null)
   const [error, setError] = useState('')
+
+  usePageMeta(
+    'Stories',
+    'Every story in the Atlas of Everyday Magic — a growing shelf of tales charting wonder from life’s little moments.',
+  )
 
   useEffect(() => {
     api
@@ -19,7 +25,7 @@ export default function Stories() {
       <div className="container">
         <div className="section__head">
           <span className="kicker">The full collection</span>
-          <h2>All of Rushu&rsquo;s Stories</h2>
+          <h2>Every Story in the Atlas</h2>
           <p>A growing shelf of tales inspired by one very curious little boy.</p>
         </div>
 

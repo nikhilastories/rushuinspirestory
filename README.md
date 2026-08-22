@@ -1,14 +1,14 @@
 # rushuinspirestory
 
-**A Son's Spark, a Mother's Magic** — a cozy home for stories a mother writes with her son as the inspiration.
+**Atlas of Everyday Magic** — charting wonder from life's little moments. A cozy home for stories a mother writes with her son as the inspiration.
 
 Stories live in this repository as Markdown files, so every draft, revision, and publication is an ordinary
 git commit. The site reads them back through the GitHub API and shows the published ones to visitors.
 
 ## How it works
 
-- **Public site** — Vite + React + TypeScript single-page app (`src/`). Home, Stories, individual story
-  pages, and an About page.
+- **Public site** — Vite + React + TypeScript single-page app (`src/`). Home, Stories, Collections,
+  individual story pages, and an About page.
 - **API** — Netlify Functions (`netlify/functions/`) that read and write story files through the GitHub
   Contents API.
 - **Content** — `content/stories/*.md`, one file per story, with YAML frontmatter. Images uploaded from the
@@ -35,6 +35,7 @@ A story file looks like this:
 title: "Welcome to Rushu's Storybook"
 slug: welcome-to-rushus-storybook
 status: published
+collection: "Bedtime Voyages"
 excerpt: "How one boy's bedtime questions turned into a whole shelf of stories."
 coverImage: /api/images/welcome-to-rushus-storybook/cover-1234567890.jpg
 createdAt: "2026-08-15T00:00:00.000Z"
@@ -47,6 +48,13 @@ Every storybook has to start somewhere…
 
 Stories can be written either in the admin editor or by committing a Markdown file directly — both produce
 the same result.
+
+## Collections
+
+`collection` is the only optional-by-choice field. Give two stories the same collection name and they appear
+together as a shelf on `/collections`; leave it blank and the story is shelved under the year it was
+published, so every story lands somewhere without any bookkeeping. The admin editor suggests collection names
+already in use, and hand-edited names in a Markdown file are preserved exactly as written.
 
 ## Setup
 
