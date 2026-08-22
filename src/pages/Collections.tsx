@@ -104,7 +104,7 @@ export default function Collections() {
             </div>
             <div className="story-grid">
               {collection.stories.map((story) => (
-                <StoryCard key={story.slug} story={story} />
+                <StoryCard key={story.slug} story={story} protectText />
               ))}
             </div>
           </section>

@@ -681,43 +681,149 @@ button {
   margin: 1.6em 0;
 }
 
-/* ---------- About ---------- */
+/* ---------- Categories ---------- */
 
-.about-hero {
-  padding: 90px 0 40px;
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: -20px 0 48px;
 }
 
-.about-grid {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 56px;
-  align-items: start;
-}
-
-@media (max-width: 800px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.about-card {
-  background: var(--paper);
-  border-radius: var(--radius);
-  padding: 32px;
-  border: 1px solid var(--line-soft);
-}
-
-.about-card + .about-card {
-  margin-top: 24px;
-}
-
-.about-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.about-card p {
+.category-chip {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--ink-soft);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.category-chip:hover {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+.category-chip--active {
+  background: var(--night);
+  border-color: var(--night);
+  color: var(--paper);
+}
+
+.category-chip__count {
+  opacity: 0.6;
+  margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.story-card__categories,
+.story-detail__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.story-detail__categories {
+  margin-top: 18px;
+}
+
+.category-tag {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--night);
+  background: var(--gold-light);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.category-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+.category-picker__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 500;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.category-picker__option input {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* ---------- Story text protection ---------- */
+
+/*
+ * Scoped deliberately: only elements carrying this class opt out of selection.
+ * Nav, footer, buttons, and every form field are untouched and stay selectable,
+ * copyable, and right-clickable.
+ */
+.protected-text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.protected-text img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* ---------- Author's Note ---------- */
+
+.authors-note {
+  padding: 90px 0 70px;
+}
+
+.authors-note__body {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: clamp(32px, 5vw, 60px);
+  box-shadow: 0 20px 44px -32px rgba(33, 36, 61, 0.45);
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  line-height: 1.9;
+  color: var(--ink);
+}
+
+.authors-note__body p + p {
+  margin-top: 1.3em;
+}
+
+.authors-note__lede {
+  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  line-height: 1.5;
+  color: var(--night);
+}
+
+.authors-note__signature {
+  margin-top: 2em;
+  font-style: italic;
+  color: var(--rose);
+  font-weight: 600;
 }
 
 /* ---------- Footer ---------- */

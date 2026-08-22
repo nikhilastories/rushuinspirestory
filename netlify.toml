@@ -5,6 +5,21 @@
 [functions]
   directory = "netlify/functions"
 
+# The story formerly published at this URL was retitled during the rebrand.
+# Listed before the SPA catch-all so the original link keeps resolving.
+[[redirects]]
+  from = "/stories/welcome-to-rushus-storybook"
+  to = "/stories/welcome-to-the-atlas"
+  status = 301
+  force = true
+
+# The About page became the Author's Note.
+[[redirects]]
+  from = "/about"
+  to = "/authors-note"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

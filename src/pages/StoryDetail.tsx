@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { api } from '../lib/api'
 import { SITE_DESCRIPTION, usePageMeta } from '../lib/meta'
 import { renderMarkdown } from '../lib/markdown'
+import ProtectedText from '../components/ProtectedText'
+import { categoriesFor } from '../lib/categories'
 import { formatDate } from '../lib/format'
 import type { StoryDetail as StoryDetailType } from '../types'
 
@@ -54,8 +56,17 @@ export default function StoryDetail() {
       <span className="kicker">A tale from the Atlas</span>
       <h1>{story.title}</h1>
       <div className="story-detail__meta">{formatDate(story.publishedAt || story.updatedAt)}</div>
+      {categoriesFor(story.category).length > 0 && (
+        <ul className="story-detail__categories">
+          {categoriesFor(story.category).map((category) => (
+            <li key={category.slug} className="category-tag">
+              {category.label}
+            </li>
+          ))}
+        </ul>
+      )}
       {story.coverImage && <img className="story-detail__cover" src={story.coverImage} alt={story.title} />}
-      <div className="story-content" dangerouslySetInnerHTML={{ __html: renderMarkdown(story.body) }} />
+      <ProtectedText className="story-content" html={renderMarkdown(story.body)} />
     </article>
   )
 }

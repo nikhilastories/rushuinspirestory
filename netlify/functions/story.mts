@@ -8,6 +8,7 @@ import { nextStoryFrontmatter, parseStory, serializeStory, storyPath } from './l
 interface UpdateStoryBody {
   title?: unknown
   collection?: unknown
+  category?: unknown
   excerpt?: unknown
   coverImage?: unknown
   status?: unknown

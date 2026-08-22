@@ -1,7 +1,10 @@
 ---
-title: "Welcome to Rushu's Storybook"
-slug: welcome-to-rushus-storybook
+title: "Welcome to the Atlas"
+slug: welcome-to-the-atlas
 status: published
+category:
+  - bedtime-voyages
+  - curious-questions
 excerpt: "How one boy's bedtime questions turned into a whole shelf of stories."
 createdAt: "2026-08-15T00:00:00.000Z"
 updatedAt: "2026-08-15T00:00:00.000Z"

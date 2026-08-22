@@ -101,7 +101,7 @@ export default function AdminLogin() {
         </svg>
         <h1>Storyteller Login</h1>
         <p>
-          This corner of {SITE_NAME} belongs to Rushu&rsquo;s mama. Sign in with the GitHub account that owns this
+          This corner of {SITE_NAME} belongs to the storyteller. Sign in with the GitHub account that owns this
           site&rsquo;s repository to draft, review, and publish new tales.
         </p>
 

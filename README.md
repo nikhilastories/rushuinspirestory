@@ -1,6 +1,6 @@
-# rushuinspirestory
+# Atlas of Everyday Magic
 
-**Atlas of Everyday Magic** — charting wonder from life's little moments. A cozy home for stories a mother writes with her son as the inspiration.
+Charting wonder from life's little moments. A cozy home for stories a mother writes with her son as the inspiration.
 
 Stories live in this repository as Markdown files, so every draft, revision, and publication is an ordinary
 git commit. The site reads them back through the GitHub API and shows the published ones to visitors.
@@ -8,7 +8,7 @@ git commit. The site reads them back through the GitHub API and shows the publis
 ## How it works
 
 - **Public site** — Vite + React + TypeScript single-page app (`src/`). Home, Stories, Collections,
-  individual story pages, and an About page.
+  individual story pages, and an Author's Note page.
 - **API** — Netlify Functions (`netlify/functions/`) that read and write story files through the GitHub
   Contents API.
 - **Content** — `content/stories/*.md`, one file per story, with YAML frontmatter. Images uploaded from the
@@ -32,12 +32,15 @@ A story file looks like this:
 
 ```markdown
 ---
-title: "Welcome to Rushu's Storybook"
-slug: welcome-to-rushus-storybook
+title: "The Ceiling Fan to the Moon"
+slug: the-ceiling-fan-to-the-moon
 status: published
 collection: "Bedtime Voyages"
-excerpt: "How one boy's bedtime questions turned into a whole shelf of stories."
-coverImage: /api/images/welcome-to-rushus-storybook/cover-1234567890.jpg
+category:
+  - bedtime-voyages
+  - curious-questions
+excerpt: "How one bedtime question turned into a whole shelf of stories."
+coverImage: /api/images/the-ceiling-fan-to-the-moon/cover-1234567890.jpg
 createdAt: "2026-08-15T00:00:00.000Z"
 updatedAt: "2026-08-15T00:00:00.000Z"
 publishedAt: "2026-08-15T00:00:00.000Z"
@@ -55,6 +58,32 @@ the same result.
 together as a shelf on `/collections`; leave it blank and the story is shelved under the year it was
 published, so every story lands somewhere without any bookkeeping. The admin editor suggests collection names
 already in use, and hand-edited names in a Markdown file are preserved exactly as written.
+
+## Categories
+
+`categories.json` at the repo root is the single source of truth for the categories a story may belong to:
+
+```json
+[{ "slug": "bedtime-voyages", "label": "Bedtime Voyages" }]
+```
+
+A story names one or more of those slugs in its `category` frontmatter — a bare string for one, a YAML list for
+several. `/stories` reads the same file to build its filter chips and its grouped sections, and each story card
+shows its category labels. **Adding a category is a one-line edit to `categories.json`**; no component takes a
+hardcoded list, and the admin editor's checkboxes are generated from it too.
+
+`vite build` validates the content before it emits anything (`scripts/validate-categories.mjs`, wired in as a
+Vite plugin). A story naming a category that `categories.json` does not list **fails the build** with the
+offending file, slug, and the list of valid slugs. A story with no category at all only logs a warning, since the
+field stays optional. Run it on its own with `npm run validate:categories`.
+
+## Reading protection
+
+Story prose is guarded against casual copying: `src/components/ProtectedText.tsx` applies `user-select: none` and
+cancels the `contextmenu`, `copy`, `cut`, and `dragstart` events. Both the CSS and the listeners are scoped to
+that one wrapper — nothing is attached to `document` — so it covers story text on `/stories`, `/collections`, and
+the story pages, while nav, footer, buttons, and every form field stay fully selectable. Home page previews are
+deliberately left unguarded.
 
 ## Setup
 
