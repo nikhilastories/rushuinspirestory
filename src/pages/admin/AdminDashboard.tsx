@@ -64,7 +64,7 @@ export default function AdminDashboard() {
     <div className="admin-shell">
       <AdminTopbar title="Manage Stories" />
       <div className="container admin-body">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, flexWrap: 'wrap', gap: 16 }}>
+        <div className="admin-toolbar">
           <div className="tab-row" style={{ marginBottom: 0 }}>
             {TABS.map((t) => (
               <button key={t.key} className={`tab ${tab === t.key ? 'active' : ''}`} onClick={() => setTab(t.key)}>
