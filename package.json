@@ -11,8 +11,10 @@
     "validate:categories": "node scripts/validate-categories.mjs"
   },
   "dependencies": {
+    "@netlify/database": "^2.0.0",
     "@netlify/identity": "^1.2.0",
     "dompurify": "^3.1.6",
+    "drizzle-orm": "^1.0.0-beta.22",
     "gray-matter": "^4.0.3",
     "marked": "^13.0.3",
     "react": "^18.3.1",
@@ -26,6 +28,7 @@
     "@types/react": "^18.3.10",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "drizzle-kit": "^1.0.0-beta.22",
     "typescript": "^5.6.2",
     "vite": "^6.4.3"
   }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import StoryCard from '../components/StoryCard'
+import NewsWidget from '../components/NewsWidget'
 import { api } from '../lib/api'
 import { usePageMeta } from '../lib/meta'
 import type { StorySummary } from '../types'
@@ -50,26 +50,7 @@ export default function Home() {
             <p>New stories are published as soon as they&rsquo;re ready &mdash; straight from Mama&rsquo;s drafts.</p>
           </div>
 
-          {stories === null && (
-            <div className="center-loader">
-              <div className="spinner" />
-            </div>
-          )}
-
-          {stories && stories.length === 0 && (
-            <div className="empty-state">
-              <h3>The first story is being written&hellip;</h3>
-              <p>Check back soon &mdash; new adventures are on their way.</p>
-            </div>
-          )}
-
-          {stories && stories.length > 0 && (
-            <div className="story-grid">
-              {stories.map((story) => (
-                <StoryCard key={story.slug} story={story} />
-              ))}
-            </div>
-          )}
+          <NewsWidget stories={stories} />
         </div>
       </section>
 
