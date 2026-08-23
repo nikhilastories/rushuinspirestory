@@ -1,4 +1,4 @@
-import type { StoryDetail, StoryStatus, StorySummary } from '../types'
+import type { StoryDetail, StoryEngagement, StoryStatus, StorySummary } from '../types'
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -52,4 +52,16 @@ export const api = {
   deleteStory: (slug: string) => request<void>(`/api/stories/${encodeURIComponent(slug)}`, { method: 'DELETE' }),
   uploadImage: (input: { slug: string; filename: string; contentType: string; dataBase64: string }) =>
     request<{ path: string }>('/api/images', { method: 'POST', body: JSON.stringify(input) }),
+  getStoryEngagement: (slugs: string[]) =>
+    request<StoryEngagement[]>(`/api/news-interactions?slugs=${encodeURIComponent(slugs.join(','))}`),
+  heartStory: (storySlug: string) =>
+    request<StoryEngagement>('/api/news-interactions', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'heart', storySlug }),
+    }),
+  commentOnStory: (storySlug: string, author: string, message: string) =>
+    request<StoryEngagement>('/api/news-interactions', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'comment', storySlug, author, message }),
+    }),
 }

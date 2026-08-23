@@ -28,3 +28,16 @@ export interface StoryInput {
   body: string
   coverImage?: string
 }
+
+export interface StoryComment {
+  id: number
+  author: string
+  message: string
+  createdAt: string
+}
+
+export interface StoryEngagement {
+  storySlug: string
+  hearts: number
+  comments: StoryComment[]
+}
