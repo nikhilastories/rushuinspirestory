@@ -16,7 +16,7 @@ export default function AdminTopbar({ title }: { title: string }) {
           <span className="kicker">Storyteller Studio</span>
           <h2 style={{ fontSize: '1.4rem', marginTop: 4 }}>{title}</h2>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
+        <div className="admin-topbar__actions">
           <Link to="/" className="btn btn-ghost">
             View site
           </Link>

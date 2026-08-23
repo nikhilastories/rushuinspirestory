@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { SITE_NAME, SITE_TAGLINE } from '../lib/meta'
 
 function MoonMark() {
@@ -12,6 +13,13 @@ function MoonMark() {
 }
 
 export default function Nav() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    setIsMenuOpen(false)
+  }, [location.pathname])
+
   return (
     <header className="site-nav">
       <div className="container site-nav__inner">
@@ -26,7 +34,20 @@ export default function Nav() {
           </span>
         </NavLink>
 
-        <nav>
+        <button
+          type="button"
+          className="nav-toggle"
+          aria-expanded={isMenuOpen}
+          aria-controls="primary-navigation"
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <nav id="primary-navigation" className={`primary-nav${isMenuOpen ? ' primary-nav--open' : ''}`}>
           <ul className="nav-links">
             <li>
               <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>
