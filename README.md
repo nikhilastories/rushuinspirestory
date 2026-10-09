@@ -15,6 +15,27 @@ git commit. The site reads them back through the GitHub API and shows the publis
   admin area land in `content/stories/images/<slug>/`.
 - **Admin** — `/admin`, reachable only by the repo owner signing in with GitHub through Netlify Identity.
 
+## Interface and hosting
+
+The interface uses an Apple-inspired dark palette, native system fonts, fluid typography, and responsive
+bento layouts. Visual styling lives in `src/design.css`, layered over the existing layout rules in
+`src/index.css`. Images and styles are served locally; no font service, styling CDN, or additional
+runtime dependency is required. Keyboard focus indicators and reduced-motion preferences are supported.
+
+The Vite frontend produces static assets in `dist`, and the existing Netlify configuration preserves
+client-side routing and API endpoints. The frontend can also be served on Cloudflare Pages, but the
+existing story, interaction, and authentication features still require the Netlify backend. Moving those
+services is outside the scope of this visual redesign; deploying the static assets alone does not
+replace them.
+
+## Story discovery wheel
+
+The homepage wheel selects a populated category at random, then a random published story from that
+category. It uses the full published catalogue, not just the latest three previews. Categories come from
+`categories.json`; stories without a recognized category appear under Other Wonders. Empty categories,
+drafts, and review-only stories are excluded. Readers can open the chosen story or spin again. The wheel
+supports keyboard interaction and reveals results immediately when reduced motion is preferred.
+
 ## Editorial workflow
 
 Each story file carries a `status` in its frontmatter and moves through three phases:

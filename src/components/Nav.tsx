@@ -4,10 +4,10 @@ import { SITE_NAME, SITE_TAGLINE } from '../lib/meta'
 
 function MoonMark() {
   return (
-    <svg width="20" height="20" viewBox="0 0 64 64" fill="none">
-      <path d="M40 14a20 20 0 1 0 10 36 16 16 0 0 1-10-36Z" fill="#E7B563" />
-      <circle cx="48" cy="18" r="2.4" fill="#F4D9A0" />
-      <circle cx="20" cy="46" r="1.6" fill="#F4D9A0" />
+    <svg width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M40 14a20 20 0 1 0 10 36 16 16 0 0 1-10-36Z" fill="currentColor" />
+      <circle cx="48" cy="18" r="2.4" fill="currentColor" />
+      <circle cx="20" cy="46" r="1.6" fill="currentColor" />
     </svg>
   )
 }
@@ -22,6 +22,7 @@ export default function Nav() {
 
   return (
     <header className="site-nav">
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <div className="container site-nav__inner">
         <NavLink to="/" className="brand">
           <span className="brand__mark">
