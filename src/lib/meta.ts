@@ -7,7 +7,7 @@ export const SITE_DESCRIPTION =
   'Atlas of Everyday Magic — charting wonder from life’s little moments. Handwritten stories where tiny ideas grow wings and ordinary moments open doors to extraordinary adventures.'
 
 /** Where link previews resolve their absolute image and page URLs. */
-export const SITE_URL = 'https://son-spark-mothers-magic.netlify.app'
+export const SITE_URL = 'https://atlas-of-everyday-magic.netlify.app'
 
 function setMeta(selector: string, attr: 'name' | 'property', key: string, content: string) {
   let tag = document.head.querySelector(selector)

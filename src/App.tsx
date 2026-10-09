@@ -32,7 +32,7 @@ export default function App() {
   return (
     <>
       {!isAdminRoute && <Nav />}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <main id="main-content" tabIndex={-1} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/stories" element={<Stories />} />
