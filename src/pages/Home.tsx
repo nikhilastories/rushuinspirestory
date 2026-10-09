@@ -49,7 +49,7 @@ export default function Home() {
               height="1136"
               fetchPriority="high"
             />
-            <figcaption>Dream the impossible. Imagine the unseen. Live the magic.</figcaption>
+            <figcaption>Discover everyday magic through a child&rsquo;s imagination and a mother&rsquo;s stories.</figcaption>
           </figure>
         </div>
       </section>

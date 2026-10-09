@@ -74,9 +74,8 @@ input, textarea, select { min-width: 0; }
 .hero .hero__subhead { max-width: none; margin-top: 24px; color: #a1a1a6; font-family: var(--font-body); font-size: clamp(1rem, 1.7vw, 1.4rem); font-style: normal; text-shadow: none; text-wrap: balance; }
 .hero__actions { margin-top: 32px; gap: 14px; justify-content: center; }
 .hero__artwork { position: relative; margin: clamp(48px, 6vw, 88px) 0 0; overflow: hidden; border-radius: 28px; background: #121212; border: 1px solid var(--line); }
-.hero__artwork img { width: 100%; height: auto; aspect-ratio: 2.45; object-fit: cover; object-position: center 42%; }
-.hero__artwork::after { content: ''; position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, rgba(0, 0, 0, 0.85)); pointer-events: none; }
-.hero__artwork figcaption { position: absolute; z-index: 1; bottom: clamp(22px, 3vw, 40px); left: 20px; right: 20px; color: #fff; font-size: clamp(0.8rem, 1.35vw, 1.1rem); letter-spacing: 0.025em; text-wrap: balance; }
+.hero__artwork img { display: block; width: 100%; height: auto; }
+.hero__artwork figcaption { position: absolute; top: 50%; left: 5%; width: 32%; transform: translateY(-50%); color: #fff8eb; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(0.8rem, 2.5vw, 2.5rem); line-height: 1.35; letter-spacing: -0.02em; text-align: left; text-wrap: balance; text-shadow: 0 2px 12px rgba(12, 12, 26, 0.5); }
 
 .section__head { max-width: 760px; margin-bottom: 48px; }
 .section__head h2 { font-size: clamp(2.1rem, 4.2vw, 4rem); font-weight: 650; line-height: 1.1; text-wrap: balance; }
@@ -188,7 +187,6 @@ input, textarea, select { min-width: 0; }
   .hero { padding: 64px 0 0; }
   .hero h1 { margin-top: 24px; }
   .hero__artwork { border-radius: 20px; }
-  .hero__artwork img { aspect-ratio: 1.5; }
   .home-section-head { flex-direction: column; align-items: flex-start; gap: 24px; }
   .news-widget { grid-template-columns: 1fr; }
   .news-item { padding: 28px; }
@@ -199,8 +197,7 @@ input, textarea, select { min-width: 0; }
   .hero__eyebrow { max-width: 260px; font-size: 0.6rem; line-height: 1.8; }
   .hero h1 { font-size: clamp(2.75rem, 11.8vw, 4.1rem); }
   .hero__actions { display: flex; flex-direction: column; align-items: stretch; max-width: 300px; margin-inline: auto; gap: 10px; }
-  .hero__artwork img { aspect-ratio: 1.1; object-position: 58% center; }
-  .hero__artwork figcaption { font-size: 0.75rem; }
+  .hero__artwork figcaption { left: 4%; width: 36%; }
   .section__head { margin-bottom: 32px; }
   .home-section-head .section__head { margin-bottom: 0; }
   .news-item { padding: 24px; gap: 14px; }
